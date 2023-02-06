@@ -1,0 +1,19 @@
+{
+  "name": "apitmdb",
+  "version": "1.0.0",
+  "description": "proyecto consumo de api tmdb",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreseduardorc/ApiTMDB.git"
+  },
+  "author": "@arodriguezc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andreseduardorc/ApiTMDB/issues"
+  },
+  "homepage": "https://github.com/andreseduardorc/ApiTMDB#readme"
+}
