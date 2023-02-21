@@ -25,6 +25,7 @@
   --font-weight-text2: 500;
 }
 
+
 html {
   background-color: var(--purple-medium-3);
 }
@@ -119,11 +120,8 @@ button {
 
 
 /* Header */
-.header-container {
-  background-image:url(./mario.jpg);
-  height: 500px;
-  padding-top: 40px;
-}
+
+
 
 .header-container--long {
   background-image: url('https://pics.filmaffinity.com/Deadpool-777527803-large.jpg');
@@ -302,7 +300,7 @@ button {
   font-weight: var(--font-weight-title2);
 }
 .movieDetail-score::before {
-  content: 'â˜…';
+  content: '☆';
   color: var(--yellow);
   padding-right: 4px;
 }
