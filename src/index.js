@@ -11,12 +11,7 @@ const api = axios.create({
     },
 })
 
-async function getTrendingMoviesPreview (){
-    const {data} = await api('trending/movie/day')
-    const movies = data.results;
 
-    createMovie(movies, trendingMoviesPreviewList);
-}
 
 
 
@@ -41,13 +36,24 @@ async function getMoviesByCategory (id){
     })
     const movies = data.results;
 
-    createMovie(movies, genericSection)
+    createMovie(movies, genericSection, true)
 }
 
-//utilidades //
 
-function createMovie(movies, container){
-    container.innerHTML = '';
+
+
+
+function createMovie(
+    movies,
+    container, 
+    {lazyLoad = true, clean = false,
+    } ={}
+
+    ){
+    if (clean){
+       container.innerHTML = ''; 
+    } 
+    
     movies.forEach(movie =>{
         
 
@@ -60,9 +66,24 @@ function createMovie(movies, container){
         const movieImg = document.createElement('img');
         movieImg.classList.add('movie-img');
         movieImg.setAttribute('alt', movie.title );
-        movieImg.setAttribute('src',
-        'https://image.tmdb.org/t/p/w300/'+ movie.poster_path,
-        );
+        movieImg.setAttribute(
+            lazyLoad ? 'data-img' : 'src',
+            'https://image.tmdb.org/t/p/w300/'+ movie.poster_path,
+            );
+            movieImg.addEventListener('error',()=>{
+                movieImg.setAttribute(
+                    'src',
+                    'https://img.freepik.com/vector-gratis/ups-error-404-ilustracion-concepto-robot-roto_114360-5529.jpg?w=740&t=st=1677552405~exp=1677553005~hmac=b0299b382913fac9da87a272f64b900003214df9f4c10d6e11c1f8ddeaa01515'
+                    
+            )
+        })
+
+
+
+        if (lazyLoad){
+            lazyLoader.observe(movieImg)
+        }
+        
         movieContainer.appendChild(movieImg);
         container.appendChild(movieContainer)
 
@@ -106,11 +127,62 @@ async function getMoviesBySearch (query){
     createMovie(movies, genericSection)
 }
 
+
 async function getTrendingMovies (){
     const {data} = await api('trending/movie/day')
     const movies = data.results;
 
-    createMovie(movies, genericSection);
+    createMovie(
+    movies, 
+    genericSection, 
+    {lazyLoad: false, clean: true});
+
+    // const btnLoadMore = document.createElement('button')
+    // btnLoadMore.innerHTML ='cargar mas'
+    // btnLoadMore.addEventListener('click', getPaginatedTrending)
+    // genericSection.appendChild(btnLoadMore)
+ 
+}
+
+async function getTrendingMoviesPreview (){
+    const {data} = await api('trending/movie/day')
+    const movies = data.results;
+
+    createMovie(movies, trendingMoviesPreviewList,{lazyLoad: false, clean: true});
+}
+
+
+async function getPaginatedTrending(){
+    const { scrollTop, 
+            clientHeight, 
+            scrollHeight} = 
+            document.documentElement;
+
+   const scrollIsBotton = scrollTop + clientHeight >= scrollHeight -15
+   
+   if (scrollIsBotton){
+    page++
+    const {data} = await api('trending/movie/day',{
+        params: {
+            page,
+        },
+    })
+    const movies = data.results;
+    createMovie(
+    movies, 
+    genericSection, 
+    {lazyLoad: true, clean: false});
+
+
+   }
+
+   
+
+    // const btnLoadMore = document.createElement('button')
+    // btnLoadMore.innerHTML ='cargar mas'
+    // btnLoadMore.addEventListener('click', getPaginatedTrending)
+    // genericSection.appendChild(btnLoadMore)
+
 }
 
 async function getMovieById (id){
@@ -142,3 +214,13 @@ async function getMovieById (id){
     createMovie(relatedMovies, relatedMoviesContainer)
 
   }
+//utilidades //
+
+const lazyLoader = new IntersectionObserver((entries)=>{
+    entries.forEach ((entry)=>{
+     if(entry.isIntersecting){
+      const url = entry.target.getAttribute('data-img')
+      entry.target.setAttribute('src',url)
+      }
+    })
+})
